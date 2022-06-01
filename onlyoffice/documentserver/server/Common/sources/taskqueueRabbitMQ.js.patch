@@ -1,0 +1,17 @@
+--- Common/sources/taskqueueRabbitMQ.js	2022-05-24 20:31:44.389000000 -0500
++++ Common/sources/taskqueueRabbitMQ.patched.js	2022-05-24 20:32:52.032000000 -0500
+@@ -416,10 +416,14 @@
+       }
+     });
+   });
+ };
+ TaskQueueRabbitMQ.prototype.addTask = function (task, priority, opt_expiration, opt_headers) {
++  var sessionData = utils.SessionData.get();
++  if (sessionData) {
++    task.sessionData = sessionData;
++  }
+   task.setVisibilityTimeout(cfgVisibilityTimeout);
+   return addTaskString(this, JSON.stringify(task), priority, opt_expiration);
+ };
+ TaskQueueRabbitMQ.prototype.addResponse = function (task) {
+   var t = this;

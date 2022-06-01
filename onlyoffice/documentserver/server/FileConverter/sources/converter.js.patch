@@ -1,0 +1,17 @@
+--- FileConverter/sources/converter.js	2022-05-24 20:26:03.250000000 -0500
++++ FileConverter/sources/converter.patched.js	2022-05-24 21:56:16.301000000 -0500
+@@ -843,10 +843,14 @@
+ function receiveTask(data, ack) {
+   return co(function* () {
+     var res = null;
+     var task = null;
+     try {
++      var payload = JSON.parse(data);
++      if (payload.sessionData != null) {
++        utils.SessionData.set(payload.sessionData, 0);
++      }
+       task = new commonDefines.TaskQueueData(JSON.parse(data));
+       if (task) {
+         res = yield* ExecuteTask(task);
+       }
+     } catch (err) {

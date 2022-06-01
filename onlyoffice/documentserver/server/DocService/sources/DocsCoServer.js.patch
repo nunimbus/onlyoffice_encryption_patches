@@ -1,0 +1,40 @@
+--- DocService/sources/DocsCoServer.js	2022-05-24 20:28:17.749000000 -0500
++++ DocService/sources/DocsCoServer.patched.js	2022-05-24 20:43:03.336000000 -0500
+@@ -1272,10 +1272,13 @@
+         if(clientStatsD) {
+           startDate = new Date();
+         }
+         var data = JSON.parse(message);
+         docId = conn.docId;
++        if (typeof data.user !== 'undefined' && typeof data.user.sessionData !== 'undefined') {
++          utils.SessionData.set(data.user.sessionData);
++        }
+         logger.info('data.type = ' + data.type + ' id = ' + docId);
+         if(getIsShutdown())
+         {
+           logger.debug('Server shutdown receive data');
+           return;
+@@ -1321,10 +1324,11 @@
+           case 'unLockDocument'    :
+             yield* checkEndAuthLock(data.unlock, data.isSave, docId, conn.user.id, data.releaseLocks, data.deleteIndex, conn);
+             break;
+           case 'close':
+             yield* closeDocument(conn, false);
++            gc.startGCDoc(docId);
+             break;
+           case 'versionHistory'          : {
+             let cmd = new commonDefines.InputCommand(data.cmd);
+             yield* versionHistory(conn, cmd);
+             break;
+@@ -1380,10 +1384,11 @@
+       return co(function* () {
+         var docId = 'null';
+         try {
+           docId = conn.docId;
+           yield* closeDocument(conn, true);
++          gc.startGCDoc(docId);
+         } catch (err) {
+           logger.error('Error conn close: docId = %s\r\n%s', docId, err.stack);
+         }
+       });
+     });

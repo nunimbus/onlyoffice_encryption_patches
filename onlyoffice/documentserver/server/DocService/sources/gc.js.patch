@@ -1,0 +1,96 @@
+--- DocService/sources/gc.js	2022-05-24 20:38:51.367000000 -0500
++++ DocService/sources/gc.patched.js	2022-05-24 20:40:38.378000000 -0500
+@@ -188,5 +188,93 @@
+   if (cfgForceSaveEnable) {
+     setTimeout(forceSaveTimeout, cfgForceSaveStep);
+   }
+ };
+ exports.getCronStep = getCronStep;
++
++var fileExpire = function(docId) {
++  return co(function* () {
++    try {
++      logger.debug('fileExpire start');
++      //проверяем что никто не сидит в документе
++      let editorsCount = yield docsCoServer.getEditorsCountPromise(docId);
++      if(0 === editorsCount){
++        if (yield canvasService.cleanupCache(docId)) {
++          logger.debug('fileExpire expire: docId = %s', docId);
++        }
++      } else {
++        logger.debug('fileExpire expire but presence: editorsCount = %d; docId = %s', editorsCount, docId);
++      }
++      logger.debug('fileExpire end: docId = %d', docId);
++    } catch (e) {
++      logger.error('fileExpire error:\r\n%s', e.stack);
++    }
++  });
++};
++var documentExpire = function(docId) {
++  return co(function* () {
++    var queue = null;
++    try {
++      logger.debug('documentExpire start');
++      queue = new queueService();
++      yield queue.initPromise(true, false, false, false, false, false);
++
++      var hasChanges = yield docsCoServer.hasChanges(docId);
++      if (hasChanges) {
++        yield docsCoServer.createSaveTimerPromise(docId, null, null, queue, true);
++      } else {
++        yield docsCoServer.cleanDocumentOnExitNoChangesPromise(docId);
++      }
++    } catch (e) {
++      logger.error('documentExpire error:\r\n%s', e.stack);
++    } finally {
++      try {
++        if (queue) {
++          yield queue.close();
++        }
++      } catch (e) {
++        logger.error('documentExpire error:\r\n%s', e.stack);
++      }
++      logger.debug('documentExpire end: docId = %d', docId);
++    }
++  });
++};
++let forceSave = function(docId) {
++  return co(function* () {
++    let queue = null;
++    let pubsub = null;
++    try {
++      logger.debug('forceSave start');
++      queue = new queueService();
++      yield queue.initPromise(true, false, false, false, false, false);
++
++      pubsub = new pubsubService();
++      yield pubsub.initPromise();
++
++      actions.push(docsCoServer.startForceSave(docId, commondefines.c_oAscForceSaveTypes.Timeout,
++        undefined, undefined, undefined, undefined, undefined, undefined, queue, pubsub));
++      yield Promise.all(actions);
++      logger.debug('forceSave actions.length %d', actions.length);
++      logger.debug('forceSave end');
++    } catch (e) {
++      logger.error('forceSave error:\r\n%s', e.stack);
++    } finally {
++      try {
++        if (queue) {
++          yield queue.close();
++        }
++        if (pubsub) {
++          yield pubsub.close();
++        }
++      } catch (e) {
++        logger.error('checkDocumentExpire error:\r\n%s', e.stack);
++      }
++    }
++  });
++};
++exports.startGCDoc = function(docId) {
++  documentExpire(docId);
++  fileExpire(docId);
++  if (cfgForceSaveEnable) {
++    forceSave(docId);
++  }
++};
