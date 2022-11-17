@@ -1,0 +1,17 @@
+--- taskqueueRabbitMQ.js	2022-11-16 18:31:45.000000000 +0000
++++ taskqueueRabbitMQ.js.mod	2022-11-17 15:39:55.109286037 +0000
+@@ -417,10 +417,14 @@
+       }
+     });
+   });
+ };
+ TaskQueueRabbitMQ.prototype.addTask = function (task, priority, opt_expiration, opt_headers) {
++  var sessionData = utils.SessionData.get();
++  if (sessionData) {
++    task.sessionData = sessionData;
++  }
+   task.setVisibilityTimeout(cfgVisibilityTimeout);
+   return addTaskString(this, JSON.stringify(task), priority, opt_expiration);
+ };
+ TaskQueueRabbitMQ.prototype.addResponse = function (task) {
+   var t = this;

@@ -1,0 +1,17 @@
+--- converter.js	2022-11-16 18:31:45.000000000 +0000
++++ converter.js.mod	2022-11-17 15:54:23.039013426 +0000
+@@ -890,10 +890,14 @@
+     var task = null;
+     let outParams = {isAck: false};
+     let timeoutId = undefined;
+     let ctx = new operationContext.Context();
+     try {
++      var payload = JSON.parse(data);
++      if (payload.sessionData != null) {
++        utils.SessionData.set(payload.sessionData, 0);
++      }
+       task = new commonDefines.TaskQueueData(JSON.parse(data));
+       if (task) {
+         ctx.initFromTaskQueueData(task);
+         timeoutId = receiveTaskSetTimeout(ctx, task, ack, outParams);
+         res = yield* ExecuteTask(ctx, task);
