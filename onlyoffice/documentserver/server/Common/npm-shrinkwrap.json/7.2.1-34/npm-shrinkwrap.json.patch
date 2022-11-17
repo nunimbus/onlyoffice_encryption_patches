@@ -1,18 +1,18 @@
---- npm-shrinkwrap.json	2022-11-16 18:34:35.000000000 +0000
-+++ npm-shrinkwrap.json.mod	2022-11-17 15:38:08.455015249 +0000
-@@ -297,10 +297,15 @@
-       },
-       "engines": {
-         "node": ">=0.10.0"
-       }
+--- npm-shrinkwrap.json	2022-11-16 18:31:45.000000000 +0000
++++ npm-shrinkwrap.json.mod	2022-11-17 17:35:28.383258710 +0000
+@@ -212,10 +212,15 @@
+     "core-util-is": {
+       "version": "1.0.2",
+       "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
+       "integrity": "sha1-tf1UIgqivFq1eqtxQMlAdUUDwac="
      },
-+    "node_modules/crypto-js": {
++    "crypto-js": {
 +      "version": "4.1.1",
 +      "resolved": "https://registry.npmjs.org/crypto-js/-/crypto-js-4.1.1.tgz",
 +      "integrity": "sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw=="
 +    },
-     "node_modules/dashdash": {
+     "dashdash": {
        "version": "1.14.1",
        "resolved": "https://registry.npmjs.org/dashdash/-/dashdash-1.14.1.tgz",
        "integrity": "sha1-hTz6D3y+L+1d4gMmuN1YEDX24vA=",
-       "dependencies": {
+       "requires": {
