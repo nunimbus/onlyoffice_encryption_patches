@@ -1,0 +1,40 @@
+--- /var/www/onlyoffice/documentserver/server/DocService/sources/DocsCoServer.js	2023-03-07 15:36:24.058586768 +0000
++++ onlyoffice/documentserver/server/DocService/sources/DocsCoServer.js/7.3.2-8/DocsCoServer.js	2023-03-07 15:34:52.304283600 +0000
+@@ -1368,10 +1368,13 @@
+         if(clientStatsD) {
+           startDate = new Date();
+         }
+ 
+         docId = conn.docId;
++        if (typeof data.user !== 'undefined' && typeof data.user.sessionData !== 'undefined') {
++          utils.SessionData.set(data.user.sessionData);
++        }
+         ctx.logger.info('data.type = %s', data.type);
+         if(getIsShutdown())
+         {
+           ctx.logger.debug('Server shutdown receive data');
+           return;
+@@ -1426,10 +1429,11 @@
+           case 'unLockDocument'    :
+             yield* checkEndAuthLock(ctx, data.unlock, data.isSave, docId, conn.user.id, data.releaseLocks, data.deleteIndex, conn);
+             break;
+           case 'close':
+             yield* closeDocument(ctx, conn);
++            gc.startGCDoc(docId);
+             break;
+           case 'versionHistory'          : {
+             let cmd = new commonDefines.InputCommand(data.cmd);
+             yield* versionHistory(ctx, conn, cmd);
+             break;
+@@ -1488,10 +1492,11 @@
+       return co(function* () {
+         let ctx = new operationContext.Context();
+         try {
+           ctx.initFromConnection(conn);
+           yield* closeDocument(ctx, conn, reason);
++          gc.startGCDoc(conn.docId);
+         } catch (err) {
+           ctx.logger.error('Error conn close: %s', err.stack);
+         }
+       });
+     });

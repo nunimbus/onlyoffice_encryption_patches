@@ -1,0 +1,18 @@
+--- /var/www/onlyoffice/documentserver/server/Common/npm-shrinkwrap.json	2023-03-07 15:36:24.054586841 +0000
++++ onlyoffice/documentserver/server/Common/npm-shrinkwrap.json/7.3.2-8/npm-shrinkwrap.json	2023-03-07 15:34:52.312283453 +0000
+@@ -212,10 +212,15 @@
+     "core-util-is": {
+       "version": "1.0.2",
+       "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
+       "integrity": "sha1-tf1UIgqivFq1eqtxQMlAdUUDwac="
+     },
++    "crypto-js": {
++      "version": "4.1.1",
++      "resolved": "https://registry.npmjs.org/crypto-js/-/crypto-js-4.1.1.tgz",
++      "integrity": "sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw=="
++    },
+     "dashdash": {
+       "version": "1.14.1",
+       "resolved": "https://registry.npmjs.org/dashdash/-/dashdash-1.14.1.tgz",
+       "integrity": "sha1-hTz6D3y+L+1d4gMmuN1YEDX24vA=",
+       "requires": {

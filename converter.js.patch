@@ -1,0 +1,17 @@
+--- /var/www/onlyoffice/documentserver/server/FileConverter/sources/converter.js	2023-03-07 15:36:24.078586398 +0000
++++ onlyoffice/documentserver/server/FileConverter/sources/converter.js/7.3.2-8/converter.js	2023-03-07 15:34:52.300283674 +0000
+@@ -1030,10 +1030,14 @@
+     var task = null;
+     let outParams = {isAck: false};
+     let timeoutId = undefined;
+     let ctx = new operationContext.Context();
+     try {
++      var payload = JSON.parse(data);
++      if (payload.sessionData != null) {
++        utils.SessionData.set(payload.sessionData, 0);
++      }
+       task = new commonDefines.TaskQueueData(JSON.parse(data));
+       if (task) {
+         ctx.initFromTaskQueueData(task);
+         timeoutId = receiveTaskSetTimeout(ctx, task, ack, outParams);
+         res = yield* ExecuteTask(ctx, task);

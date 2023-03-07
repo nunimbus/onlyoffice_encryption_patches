@@ -1,0 +1,17 @@
+--- /var/www/onlyoffice/documentserver/server/Common/sources/taskqueueRabbitMQ.js	2023-03-07 15:36:24.058586768 +0000
++++ onlyoffice/documentserver/server/Common/sources/taskqueueRabbitMQ.js/7.3.2-8/taskqueueRabbitMQ.js	2023-03-07 15:34:52.312283453 +0000
+@@ -460,10 +460,14 @@
+       }
+     });
+   });
+ };
+ TaskQueueRabbitMQ.prototype.addTask = function (task, priority, opt_expiration, opt_headers) {
++  var sessionData = utils.SessionData.get();
++  if (sessionData) {
++    task.sessionData = sessionData;
++  }
+   task.setVisibilityTimeout(cfgVisibilityTimeout);
+   return addTaskString(this, JSON.stringify(task), priority, opt_expiration);
+ };
+ TaskQueueRabbitMQ.prototype.addResponse = function (task) {
+   var t = this;
